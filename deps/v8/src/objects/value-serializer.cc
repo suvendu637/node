@@ -691,8 +691,7 @@ Maybe<bool> ValueSerializer::WriteJSObject(Handle<JSObject> object) {
                   details.location() == PropertyLocation::kField)) {
       DCHECK_EQ(PropertyKind::kData, details.kind());
       FieldIndex field_index = FieldIndex::ForDetails(*map, details);
-      value = JSObject::FastPropertyAt(isolate_, object,
-                                       details.representation(), field_index);
+      value = handle(object->RawFastPropertyAt(field_index), isolate_);
     } else {
       // This logic should essentially match WriteJSObjectPropertiesSlow.
       // If the property is no longer found, do not serialize it.
@@ -1264,7 +1263,7 @@ Maybe<bool> ValueSerializer::ThrowDataCloneError(
 }
 
 Maybe<bool> ValueSerializer::ThrowDataCloneError(MessageTemplate index,
-                                                 Handle<Object> arg0) {
+                                                 DirectHandle<Object> arg0) {
   Handle<String> message =
       MessageFormatter::Format(isolate_, index, base::VectorOf({arg0}));
   if (delegate_) {
